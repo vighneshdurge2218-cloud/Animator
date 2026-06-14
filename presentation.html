@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANIMaiTOR: Models & Algorithms Presentation</title>
+  <!-- Modern Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    /* Styling Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at 50% 50%, #0f0927, #04030a);
+      color: #e2e8f0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    /* Top Glowing Progress Bar */
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #8b5cf6, #ec4899, #3b82f6);
+      transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+    }
+
+    /* Slide Deck Layout */
+    .slide-deck {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      width: 100%;
+      padding: 40px;
+    }
+
+    /* Individual Slide Card Design */
+    .slide {
+      position: absolute;
+      width: 90%;
+      max-width: 1100px;
+      height: 78vh;
+      max-height: 650px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(30px) scale(0.98);
+      transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 50px 60px;
+      box-shadow: 0 35px 70px rgba(0, 0, 0, 0.5);
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+      z-index: 5;
+    }
+
+    /* Grid Frameworks */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    /* Accents & Text Styles */
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      color: #c084fc;
+      margin-bottom: 20px;
+      align-self: flex-start;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .title-large {
+      font-size: 3.5rem;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      font-weight: 800;
+    }
+
+    .title-sub {
+      font-size: 1.2rem;
+      color: #94a3b8;
+      max-width: 650px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .title-medium {
+      font-size: 2.1rem;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .subtitle-algo {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #c084fc;
+      margin-bottom: 25px;
+      font-family: monospace;
+      letter-spacing: 0.5px;
+    }
+
+    /* Interactive Cards */
+    .card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(139, 92, 246, 0.3);
+      transform: translateY(-3px);
+    }
+
+    .card-title {
+      font-size: 1rem;
+      color: #ffffff;
+      margin-bottom: 10px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-text {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: #94a3b8;
+    }
+
+    /* Key Details Box */
+    .detail-box {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 18px 24px;
+      border-radius: 16px;
+    }
+
+    .detail-box h3 {
+      font-size: 1.15rem;
+      margin-bottom: 10px;
+      color: #ffffff;
+    }
+
+    .detail-box p {
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: #a1a1aa;
+      margin-bottom: 15px;
+    }
+
+    .talk-point {
+      border-left: 3px solid #ec4899;
+      padding-left: 15px;
+      margin-top: 15px;
+      font-style: italic;
+      color: #e2e8f0;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    /* Highlights */
+    .hl-purple {
+      color: #c084fc;
+      font-weight: 600;
+    }
+
+    .hl-pink {
+      color: #f472b6;
+      font-weight: 600;
+    }
+
+    .hl-blue {
+      color: #60a5fa;
+      font-weight: 600;
+    }
+
+    /* Footer & Navigation Controls */
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 60px;
+      background: rgba(4, 3, 9, 0.6);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      z-index: 10;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: #ffffff;
+      padding: 10px 24px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .nav-btn.primary {
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      border: none;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25);
+    }
+
+    .nav-btn.primary:hover {
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+    }
+
+    .slide-numbering {
+      font-size: 0.85rem;
+      color: #4b5563;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    /* Ambient Background Glow */
+    .bg-glow {
+      position: absolute;
+      width: 450px;
+      height: 450px;
+      border-radius: 50%;
+      background: rgba(139, 92, 246, 0.05);
+      filter: blur(95px);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .glow-top-left {
+      top: -150px;
+      left: -150px;
+    }
+
+    .glow-bottom-right {
+      bottom: -150px;
+      right: -150px;
+      background: rgba(236, 72, 153, 0.03);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background decorative glows -->
+  <div class="bg-glow glow-top-left"></div>
+  <div class="bg-glow glow-bottom-right"></div>
+
+  <!-- Top glowing progress bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Main slide deck container -->
+  <div class="slide-deck">
+
+    <!-- Slide 1: Welcome -->
+    <div class="slide active">
+      <div class="badge">Technical Pitch Presentation</div>
+      <h1 class="title-large"><span class="gradient-text">ANIMaiTOR Deep Dive</span></h1>
+      <p class="title-sub">Under-the-hood explanation of the models and mathematical algorithms powering our automated
+        AI Movie Studio.</p>
+
+      <div class="grid-2" style="margin-top: 20px; gap: 20px;">
+        <div class="card">
+          <div class="card-title">🤖 Pure AI Pipeline</div>
+          <p class="card-text">Every single segment (Scripts, Stills, Voices, Motion, Editing) runs using separate
+            specialized state-of-the-art architectures.</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; font-size: 0.82rem; color: #6b7280; font-weight: 500;">
+        💡 Use your <b>Left/Right Arrow Keys</b> or click the buttons below to present the models step-by-step.
+      </div>
+    </div>
+
+    <!-- Slide 2: Model 1 - The Scriptwriter -->
+    <div class="slide">
+      <div class="badge">Model 1: Scripting</div>
+      <h2 class="title-medium">The Scriptwriter Model</h2>
+      <div class="subtitle-algo">Algorithm: Autoregressive Token Prediction (Transformer Architecture)</div>
+
+      <div class="grid-2">
+        <div class="detail-box">
+          <h3>How it operates under the hood:</h3>
+          <p>
+            It reads your text input and calculates probabilities to predict the next word (token) one-by-one. It uses a
+            mathematical <b>Self-Attention mechanism</b>, looking back at all prior words to ensure logical story flow
+            and scene sequencing.
+          </p>
+          <p>
+            The system forces the model to structure the visual scenery descriptions and narrated voices strictly inside
+            a <b>JSON payload</b>.
+          </p>
+        </div>
+        <div class="card">
+          <h4 style="font-size: 0.95rem; margin-bottom: 6px; color: #ffffff;">🔑 Active Models:</h4>
+          <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 12px;">Qwen-2.5-72B (Creative), Gemini-2.5-Flash
+            (Fast), LLaMA-3.3-70B (Fallback).</p>
+
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: Model 2 - The Photographer -->
+    <div class="slide">
+      <div class="badge">Model 2: Scenic Stills</div>
+      <h2 class="title-medium">The Scenery Photographer</h2>
+      <div class="subtitle-algo">Algorithm: Flow Matching & Latent Diffusion</div>
+
+      <div class="grid-2">
+        <div class="detail-box">
+          <h3>How it operates under the hood:</h3>
+          <p>
+            The model starts with a grid of completely random mathematical noise <b>(television static)</b>. Over 20-30
+            denoising steps, the algorithm guides and subtracts this static according to the scene prompt.
+          </p>
+          <p>
+            It encodes text descriptions into a latent mathematical space, shifting the noise step-by-step until a sharp
+            3D visual render is formed.
+          </p>
+        </div>
+        <div class="card">
+          <h4 style="font-size: 0.95rem; margin-bottom: 6px; color: #ffffff;">🔑 Style Optimization:</h4>
+          <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 12px;">Applies an automated <b>Prompt Wrapping
+              filter</b> (forcing uniform 3D Pixar styles and consistent character presence).</p>
+
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: Model 3 - The Voice Actor -->
+    <div class="slide">
+      <div class="badge">Model 3: Sound Department</div>
+      <h2 class="title-medium">The Voice Actor Model</h2>
+      <div class="subtitle-algo">Algorithm: Neural Vocoder Waveform Synthesis</div>
+
+      <div class="grid-2">
+        <div class="detail-box">
+          <h3>How it operates under the hood:</h3>
+          <p>
+            It translates text sentences into acoustic phonetic syllable structures. A deep neural vocoder predicts
+            speech pacing, volume waves, and intonations to output highly realistic narration waves at **44,100Hz**.
+          </p>
+          <p>
+            It features realistic human details like natural intakes of breath and contextual inflections.
+          </p>
+        </div>
+        <div class="card">
+          <h4 style="font-size: 0.95rem; margin-bottom: 6px; color: #ffffff;">🔑 Soundboard Mixing:</h4>
+          <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 12px;">Uses a custom **FFmpeg Sidechain
+            Compressor** algorithm.</p>
+
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: Model 4 - The Animator -->
+    <div class="slide">
+      <div class="badge">Model 4: Video Motion</div>
+      <h2 class="title-medium">The Motion Animator</h2>
+      <div class="subtitle-algo">Algorithm: Temporal Latent Diffusion (3D UNet)</div>
+
+      <div class="grid-2">
+        <div class="detail-box">
+          <h3>How it operates under the hood:</h3>
+          <p>
+            Takes the 2D still image and injects noise. SVD-XT uses **temporal layers** trained on physics, gravity, and
+            motion to predict how the pixels must flow across 14 consecutive frames, generating a 2.0-second video clip.
+          </p>
+          <p>
+            To fit on free Google Colab T4 GPU hardware, we engineered critical memory offloads.
+          </p>
+        </div>
+        <div class="card">
+          <h4 style="font-size: 0.95rem; margin-bottom: 6px; color: #ffffff;">🔑 Memory Offloading:</h4>
+          <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px;">
+            <b>Sequential CPU Offload:</b> Swaps AI layers to GPU one-by-one, cutting RAM overhead from 8GB to 1.5GB.
+            Also uses attention slicing.
+          </p>
+
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Model 5 - The Editor -->
+    <div class="slide">
+      <div class="badge">Model 5: Video Compile</div>
+      <h2 class="title-medium">The Editor Engine (FFmpeg)</h2>
+      <div class="subtitle-algo">Algorithm: Timeline Interpolation & xfade Blends</div>
+
+      <div class="grid-2">
+        <div class="detail-box">
+          <h3>How it operates under the hood:</h3>
+          <p>
+            Fuses variables together. First, it uses the <b>`setpts` timing filter</b> to slow down the 2-second visual
+            clips to match the exact duration of the spoken voiceover files.
+          </p>
+          <p>
+            Second, it overlaps adjacent scene boundaries by $0.5\text{ seconds}$ and runs a pixel-by-pixel cross-fade
+            (`xfade`) transition matrix.
+          </p>
+        </div>
+        <div class="card">
+          <h4 style="font-size: 0.95rem; margin-bottom: 6px; color: #ffffff;">🔑 Output Encoding:</h4>
+          <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px;">Encodes using `libx264 (CRF 18)` and pushes
+            the file header atom to the front (`+faststart`).</p>
+
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Model Summary Dashboard -->
+    <div class="slide">
+      <div class="badge">Presentation Matrix</div>
+      <h2 class="title-medium" style="text-align: center; margin-bottom: 25px;"><span class="gradient-text">Models &
+          Algorithms Dashboard</span></h2>
+
+      <div style="max-width: 900px; margin: 0 auto; width: 100%;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.82rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid rgba(255,255,255,0.08); color: #c084fc;">
+              <th style="padding: 10px 15px; font-family: 'Outfit'; font-weight: 600;">MODULE</th>
+              <th style="padding: 10px 15px; font-family: 'Outfit'; font-weight: 600;">ACTIVE MODEL</th>
+              <th style="padding: 10px 15px; font-family: 'Outfit'; font-weight: 600;">MATHEMATICAL ALGORITHM</th>
+              <th style="padding: 10px 15px; font-family: 'Outfit'; font-weight: 600;">CORE VALUE ADD</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+              <td style="padding: 10px 15px; font-weight: 600;">1. Scripting</td>
+              <td style="padding: 10px 15px;">Qwen / Gemini / LLaMA</td>
+              <td style="padding: 10px 15px; font-family: monospace; color: #a78bfa;">Autoregressive Transformer</td>
+              <td style="padding: 10px 15px; color: #94a3b8;">Cascading multi-model story backup</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+              <td style="padding: 10px 15px; font-weight: 600;">2. Scenery</td>
+              <td style="padding: 10px 15px;">Flux & Turbo</td>
+              <td style="padding: 10px 15px; font-family: monospace; color: #a78bfa;">Latent Diffusion (Denoising)</td>
+              <td style="padding: 10px 15px; color: #94a3b8;">Unified Disney-Pixar 3D Prompt Wrapping</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+              <td style="padding: 10px 15px; font-weight: 600;">3. Audio</td>
+              <td style="padding: 10px 15px;">ElevenLabs / EdgeTTS</td>
+              <td style="padding: 10px 15px; font-family: monospace; color: #a78bfa;">Neural Waveform Vocoder</td>
+              <td style="padding: 10px 15px; color: #94a3b8;">FFmpeg Sidechain Compressed Audio Ducking</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px 15px; font-weight: 600;">4. Motion</td>
+              <td style="padding: 10px 15px;">SVD-XT (Colab Server)</td>
+              <td style="padding: 10px 15px; font-family: monospace; color: #a78bfa;">Temporal Latent Diffusion (3D
+                UNet)</td>
+              <td style="padding: 10px 15px; color: #94a3b8;">Sequential Memory Offloading (RAM/VRAM swap)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Slide Footer Navigation Controls -->
+  <div class="slide-footer">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">◀ Previous</button>
+    <div class="slide-numbering" id="slideNumber">Slide 1 / 7</div>
+    <button class="nav-btn primary" id="nextBtn" onclick="changeSlide(1)">Next ▶</button>
+  </div>
+
+  <!-- Slide controller script -->
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const progressBar = document.getElementById('progressBar');
+    const slideNumberText = document.getElementById('slideNumber');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    let currentSlideIndex = 0;
+    const totalSlides = slides.length;
+
+    function updateSlideDeck() {
+      slides.forEach((slide, index) => {
+        if (index === currentSlideIndex) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      const progressPercent = ((currentSlideIndex + 1) / totalSlides) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+
+      slideNumberText.textContent = `Slide ${currentSlideIndex + 1} / ${totalSlides}`;
+
+      prevBtn.style.opacity = currentSlideIndex === 0 ? '0.3' : '1';
+      prevBtn.style.pointerEvents = currentSlideIndex === 0 ? 'none' : 'auto';
+
+      if (currentSlideIndex === totalSlides - 1) {
+        nextBtn.textContent = 'Restart ↩';
+      } else {
+        nextBtn.textContent = 'Next ▶';
+      }
+    }
+
+    function changeSlide(direction) {
+      currentSlideIndex += direction;
+
+      if (currentSlideIndex >= totalSlides) {
+        currentSlideIndex = 0;
+      } else if (currentSlideIndex < 0) {
+        currentSlideIndex = totalSlides - 1;
+      }
+
+      updateSlideDeck();
+    }
+
+    // Keyboard bindings (Left/Right Arrows, Spacebar)
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === ' ') {
+        event.preventDefault();
+        changeSlide(1);
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        changeSlide(-1);
+      }
+    });
+
+    updateSlideDeck();
+  </script>
+</body>
+
+</html>
