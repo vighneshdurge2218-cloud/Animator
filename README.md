@@ -5,7 +5,7 @@ A production-ready full-stack web app that generates short cinematic videos from
 - **Pollinations.ai** (image generation — completely free, no API key needed)
 - **FFmpeg** (video rendering)
 
----
+-----
 
 ## 📁 Project Structure
 
